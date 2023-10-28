@@ -29,13 +29,35 @@
                 height: 50px;
                 background: black;
             }
+            #titletext{
+                display: flex;
+                align-items: center;
+                margin: 0px;
+            }
+            #op{
+                border: solid 1px;
+                width: max-content;
+                margin-bottom: 10px;
+            }
+            #op p{
+                margin: 0px;
+            }
         </style>
 
         
     </head>
     <body>
-        <h1>エクストラ・バレット フィールドマップメーカー</h1>
-        <h2>制作：ニラサカ (@JumpOnLily_pad)</h2>
+        <div id="titletext">
+            <h1>エクストラ・バレット フィールドマップメーカー</h1>
+            <h3 style="margin-left: 20px;">制作：ニラサカ (X：<a href="https://twitter.com/JumpOnLily_pad">@JumpOnLily_pad</a>)</h3>
+        </div>
+        <div id="op">
+            <p>〇使い方</p>
+            <p>作成したいフィールドの行数・列数・マップサイズを設定し、「マップを画像で保存」ボタンでダウンロードできます。</p>
+            <p>マスを染色したい場合は、染色した色を選択して、マスをクリックしましょう。染色済みのマスをクリックすると白に戻ります。</p>
+            <p>〇注意</p>
+            <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ブラウザの表示を100%の状態で保存してください</p>
+        </div>
         <div id="input_number" style="display: flex;">
             <p>行</p>
             <input type="number" id="tHeight" value="10" min="1"/>
