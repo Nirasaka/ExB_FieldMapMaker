@@ -1,0 +1,265 @@
+<html>
+    <head>
+        <title>エクストラ・バレット フィールドマップメーカー</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.1.2/sprintf.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" />
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+        <style>
+            
+            th{
+                background: #eee;
+            }
+            .white{
+                background: white;
+            }
+            th,td{
+                border: solid 1px;
+            }
+            table{
+                border: solid 1px;
+                border-spacing: 0;
+                white-space: nowrap;
+                table-layout: fixed;
+                width: 0;
+            }
+            #colorSample{
+                width: 50px;
+                height: 50px;
+                background: black;
+            }
+        </style>
+
+        
+    </head>
+    <body>
+        <h1>エクストラ・バレット フィールドマップメーカー</h1>
+        <div id="input_number" style="display: flex;">
+            <p>行</p>
+            <input type="number" id="tHeight" value="10" min="1"/>
+            <p style="padding-left: 10px;">列</p>
+            <input type="number" id="tWidth" value="10" min="1"/>
+
+            <p style="padding-left: 10px;">マップサイズ</p>
+            <input type="number" id="tSize" value="2" min="1" max="6"/>
+
+            <p style="padding-left: 10px;">染色</p>
+            <div id="colorSample"></div>
+            <input type="color" autocomplete="off" list="color" placeholder="カラーコードまたはリストから入力" id="cellColor"/>
+                <datalist id="color">
+                    <option value="black"></option>
+                    <option value="red"></option>
+                    <option value="green"></option>
+                    <option value="blue"></option>
+                    <option value="pink"></option>
+                    <option value="lightgreen"></option>
+                    <option value="lightblue"></option>
+                </datalist>
+
+            
+        </div>
+        <div style="padding-top: 15px;padding-bottom: 15px;">
+            <button type="button"
+                id="save-btn"
+                onclick="html2image('#table','#image')"
+                >
+                マップを画像で保存
+            </button>
+        </div>
+
+        <!--表の表示場所-->
+        <div id="maptable" style="overflow-x: scroll"><table id="table"></table></div>
+
+        <!--画像化-->
+        <img id="image" name="image" src="" />
+        <a id="download" href="#" download=""></a>
+
+
+        
+        <script>//表作成
+
+            var map = document.getElementById('maptable');
+            var table = document.getElementById('table');
+
+            var cellSize = 24*document.getElementById('tSize').value;
+            var fontSize = 10*document.getElementById('tSize').value;
+
+            var cHcnt = document.getElementById('tHeight');
+            var cWcnt = document.getElementById('tWidth');
+            var cellColor = "black";
+        
+            for(var i=0;i<=cHcnt.value;i++){
+                var tr = document.createElement('tr');
+                for(var j=0;j<=cWcnt.value;j++){
+                    if(i==0 || j==0){
+                        var th = document.createElement('th');
+                        th.width = cellSize;
+                        th.height = cellSize;
+                        if(i>0){
+                            th.textContent = i;
+                        }
+                        if(j>0){
+                            th.textContent = j;
+                        }
+                        tr.appendChild(th);
+                    }else{
+                        var td = document.createElement('td');
+                        td.width = cellSize;
+                        td.height = cellSize;
+                        td.classList.add("white");
+                        td.onclick = function(){
+                            if(this.classList.contains("white")){
+                                this.classList.remove("white");
+                                this.style.background = cellColor;
+                            }else{
+                                this.classList.add("white");
+                                this.style.background = "white";
+                            }
+                        };
+                        tr.appendChild(td);
+                    }
+                }
+                table.appendChild(tr);
+            }
+            map.appendChild(table);
+            table.style.fontSize = fontSize;
+            
+           
+            
+            function editTble(){
+                cellSize = 24*document.getElementById('tSize').value;
+                fontSize = 10*document.getElementById('tSize').value;
+                cHcnt = document.getElementById('tHeight');
+                cWcnt = document.getElementById('tWidth');
+                if(document.getElementById('cellColor').value == ""){
+                    cellColor = "black";
+                    document.getElementById('colorSample').style.background = "black";
+                }else{
+                    cellColor = document.getElementById('cellColor').value;
+                    document.getElementById('colorSample').style.background = cellColor;
+                }
+                
+                var preCH = table.rows.length;
+                var preCW = table.rows[0].cells.length;
+
+                if(preCH-1 < cHcnt.value){//行が増えた時
+                    for(var i=preCH;i<=cHcnt.value;i++){
+                        var tr = document.createElement('tr');
+                        for(var j=0;j<=cWcnt.value;j++){
+                            if(i==0 || j==0){
+                                var th = document.createElement('th');
+                                th.width = cellSize;
+                                th.height = cellSize;
+                                if(i>0){
+                                    th.textContent = i;
+                                }
+                                if(j>0){
+                                    th.textContent = j;
+                                }
+                                tr.appendChild(th);
+                            }else{
+                                var td = document.createElement('td');
+                                td.width = cellSize;
+                                td.height = cellSize;
+                                td.classList.add("white");
+                                td.onclick = function(){
+                                    if(this.classList.contains("white")){
+                                        this.classList.remove("white");
+                                        this.style.background = cellColor;
+                                    }else{
+                                        this.classList.add("white");
+                                        this.style.background = "white";
+                                    }
+                                };
+                                tr.appendChild(td);
+                            }
+                        }
+                        table.appendChild(tr);
+                    }
+
+
+                }else if(preCW-1 < cWcnt.value){//列が増えた時
+                    for(var i=0;i<=cHcnt.value;i++){
+                        var tr = table.rows[i];
+                        for(var j=preCW;j<=cWcnt.value;j++){
+                            if(i==0 || j==0){
+                                var th = document.createElement('th');
+                                th.width = cellSize;
+                                th.height = cellSize;
+                                if(i>0){
+                                    th.textContent = i;
+                                }
+                                if(j>0){
+                                    th.textContent = j;
+                                }
+                                tr.appendChild(th);
+                            }else{
+                                var td = document.createElement('td');
+                                td.width = cellSize;
+                                td.height = cellSize;
+                                td.classList.add("white");
+                                td.onclick = function(){
+                                    if(this.classList.contains("white")){
+                                        this.classList.remove("white");
+                                        this.style.background = cellColor;
+                                    }else{
+                                        this.classList.add("white");
+                                        this.style.background = "white";
+                                    }
+                                };
+                                tr.appendChild(td);
+                            }
+                        }
+                    }
+
+
+                }else if(preCH-1 > cHcnt.value){//行が減ったとき
+                    for(var i=preCH-1;i>cHcnt.value;i--){
+                        table.deleteRow(i);
+                    }
+
+
+                }else{//列が減ったとき
+                    for(var i=0;i<=cHcnt.value;i++){
+                        for(var j=preCW-1;j>cWcnt.value;j--){
+                            table.rows[i].deleteCell(-1);
+                        }
+                    }
+                }
+
+
+                for(var i=0;i<=cHcnt.value;i++){//マップサイズ
+                    for(var j=0;j<=cWcnt.value;j++){
+                        table.rows[i].cells[j].width = cellSize;
+                        table.rows[i].cells[j].height = cellSize;
+                    }
+                }
+                table.style.fontSize = fontSize;
+            }
+
+
+            window.addEventListener('DOMContentLoaded',function(){
+                let inputNumber = document.getElementById("input_number");
+
+                inputNumber.addEventListener("change",function(){
+                    editTble();
+                });
+            });
+
+
+            //画像化
+            function html2image(html) {
+                var capture = document.querySelector(html);
+                html2canvas(capture, {useCORS: true}).then(canvas => {
+                    var base64 = canvas.toDataURL('image/png');
+            //		$('#image').attr("src", base64);		//画面に画像表示
+                    $('#download').attr('href', base64);
+                    $('#download').attr('download', "exb_map");
+                    $('#download')[0].click();				//自動ダウンロード
+                });
+            }
+        </script>
+
+    </body>
+</html>
