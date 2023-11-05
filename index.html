@@ -56,7 +56,6 @@
             <p>作成したいフィールドの行数・列数・マップサイズを設定し、「マップを画像で保存」ボタンでダウンロードできます。</p>
             <p>マスを染色したい場合は、染色した色を選択して、マスをクリックしましょう。染色済みのマスをクリックすると白に戻ります。</p>
             <p>〇注意</p>
-            <p>商用利用、二次配布、自作発言はしないでください。</p>
             <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ブラウザの表示を100%の状態で保存してください</p>
         </div>
         <div id="input_number" style="display: flex;">
@@ -106,7 +105,7 @@
             var map = document.getElementById('maptable');
             var table = document.getElementById('table');
 
-            var cellSize = 22*document.getElementById('tSize').value;
+            var cellSize = 24*document.getElementById('tSize').value;
             var fontSize = 10*document.getElementById('tSize').value;
 
             var cHcnt = document.getElementById('tHeight');
@@ -152,6 +151,7 @@
            
             
             function editTble(){
+
                 cellSize = 24*document.getElementById('tSize').value;
                 fontSize = 10*document.getElementById('tSize').value;
                 cHcnt = document.getElementById('tHeight');
@@ -260,6 +260,7 @@
                     }
                 }
                 table.style.fontSize = fontSize;
+                
             }
 
 
