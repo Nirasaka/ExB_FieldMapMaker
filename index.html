@@ -430,10 +430,8 @@
                         
                         for(var i=0;i<drawRange.rows.length;i++){
                             for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(Math.abs(maxDistance-i)<=j && maxDistance*2-Math.abs(maxDistance-i)>=j){
-                                    if(Math.abs(maxDistance-i)+maxDistance+1-minDistance>j || maxDistance*2-Math.abs(maxDistance-i)-maxDistance-1+minDistance<j){
-                                        drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                    }    
+                                if(Math.abs(maxDistance-i)+Math.abs(maxDistance-j)<=maxDistance && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)>=minDistance){
+                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
                                 }
                             }
                         }
