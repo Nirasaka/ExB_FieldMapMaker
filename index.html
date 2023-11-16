@@ -12,12 +12,13 @@
                 background: #eee;
             }
             .white{
-                background: white;
+                background: rgb(255,255,255);
             }
             th,td{
                 border: solid 1px;
+                text-align: center;
             }
-            table{
+            #table{
                 border: solid 1px;
                 border-spacing: 0;
                 white-space: nowrap;
@@ -33,14 +34,80 @@
                 display: flex;
                 align-items: center;
                 margin: 0px;
+                width: 100%;
             }
             #op{
                 border: solid 1px;
-                width: max-content;
+                width: 100%;
                 margin-bottom: 10px;
             }
             #op p{
                 margin: 0px;
+            }
+            #maptable{
+                height: 580px;
+                width: 98.5%;
+                padding: 10px;
+                background: lightblue;
+                display: flex;
+                margin: 0;
+            }
+            #mapprint{
+                overflow-x: scroll;
+                width: 60%;
+                height: 100%;
+            }
+            #templateMaker{
+                padding-left: 10px;
+                width: 40%;
+            }
+            #rangemenu{
+                display: flex;
+            }
+            #rangetable{
+                overflow-x: scroll;
+                height: 500px;
+                width: 100%;
+            }
+            #range{
+                border: solid 1px;
+                border-spacing: 0;
+                white-space: nowrap;
+                table-layout: fixed;
+                width: 0;
+            }
+            #free_range{
+                border: solid 1px;
+                border-spacing: 0;
+                white-space: nowrap;
+                table-layout: fixed;
+                display: none;
+                width: 0;
+            }
+            #input_fan{
+                display: none;
+            }
+            #input_fan p{
+                margin: 5px;
+                white-space: nowrap;
+            }
+            #input_rifle{
+                display: none;
+            }
+            #input_rifle p{
+                margin: 5px;
+                white-space: nowrap;
+            }
+            #input_rows{
+                display: none;
+            }
+            #input_rows p{
+                margin: 5px;
+                white-space: nowrap;
+            }
+            #bb_text{
+                margin: 0;
+                white-space: nowrap;
             }
         </style>
 
@@ -55,9 +122,11 @@
             <p>〇使い方</p>
             <p>作成したいフィールドの行数・列数・マップサイズを設定し、「マップを画像で保存」ボタンでダウンロードできます。</p>
             <p>マスを染色したい場合は、染色した色を選択して、マスをクリックしましょう。染色済みのマスをクリックすると白に戻ります。</p>
+            <p>範囲テンプレートメーカーはクリックによる染色はできません。また、範囲テンプレートを保存する際にはボーダー(枠線)は透過されます。</p>
             <p>〇注意</p>
             <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ブラウザの表示を100%の状態で保存してください</p>
         </div>
+
         <div id="input_number" style="display: flex;">
             <p>行</p>
             <input type="number" id="tHeight" value="10" min="1"/>
@@ -69,30 +138,67 @@
 
             <p style="padding-left: 10px;">染色</p>
             <div id="colorSample"></div>
-            <input type="color" autocomplete="off" list="color" placeholder="カラーコードまたはリストから入力" id="cellColor"/>
-                <datalist id="color">
-                    <option value="black"></option>
-                    <option value="red"></option>
-                    <option value="green"></option>
-                    <option value="blue"></option>
-                    <option value="pink"></option>
-                    <option value="lightgreen"></option>
-                    <option value="lightblue"></option>
-                </datalist>
+            <input type="color" list="color" id="cellColor"/>
 
             
         </div>
         <div style="padding-top: 15px;padding-bottom: 15px;">
             <button type="button"
                 id="save-btn"
-                onclick="html2image('#table','#image')"
+                onclick="saveMap()"
                 >
                 マップを画像で保存
             </button>
         </div>
 
         <!--表の表示場所-->
-        <div id="maptable" style="overflow-x: scroll"><table id="table"></table></div>
+        <div id="maptable">
+            <div id="mapprint">
+                <table id="table"></table>
+            </div>
+
+            <!--範囲テンプレートメーカー-->
+            <div id="templateMaker">
+                <div>
+                    <h4 id="bb_text">範囲テンプレートメーカー</h4>
+                    <button type="button"
+                        id="save-btn"
+                        onclick="saveRange()"
+                        >
+                        範囲を画像で保存
+                    </button>
+                </div>
+                <div id="rangemenu">
+                    <input type="color" list="color" id="rangeColor" value="#ff0000"/>
+                    <select name="range_type" id="input_range">
+                        <option value="circle9">円形範囲9</option>
+                        <option value="circle13">円形範囲13</option>
+                        <option value="cross5">十字範囲5</option>
+                        <option value="fan">扇状範囲</option>
+                        <option value="riflerange">射程</option>
+                    </select>
+                    <div id="input_fan">
+                        <input type="number" id="fanRange" value="2" min="1" style="width:50px;"/><p>の二乗</p>
+                    </div>
+                    <div id="input_rifle">
+                        <input type="number" id="minRifleRange" value="1" min="1" style="width:50px;"/>
+                        <p>～</p>
+                        <input type="number" id="maxRifleRange" value="3" min="1" style="width:50px;"/>
+                    </div>
+                    <div id="input_rows">
+                        <p style="padding-left: 20px;">行</p>
+                        <input type="number" id="rangeH" value="5" min="1" style="width: 50px;"/>
+                        <p style="padding-left: 10px;">列</p>
+                        <input type="number" id="rangeW" value="5" min="1" style="width: 50px;"/>
+                    </div>
+                </div>
+                <div id="rangetable">
+                    <table id="range"></table>
+                    <table id="free_range"></table>
+                </div>
+            </div>
+        </div>
+        
 
         <!--画像化-->
         <img id="image" name="image" src="" />
@@ -100,78 +206,45 @@
 
 
         
-        <script>//表作成
+        <script>
+        //マップ作成
 
-            var map = document.getElementById('maptable');
-            var table = document.getElementById('table');
+            var map = document.getElementById('table');
 
             var cellSize = 24*document.getElementById('tSize').value;
             var fontSize = 10*document.getElementById('tSize').value;
 
-            var cHcnt = document.getElementById('tHeight');
-            var cWcnt = document.getElementById('tWidth');
+            var cHcnt = document.getElementById('tHeight').value;
+            var cWcnt = document.getElementById('tWidth').value;
             var cellColor = "black";
-        
-            for(var i=0;i<=cHcnt.value;i++){
-                var tr = document.createElement('tr');
-                for(var j=0;j<=cWcnt.value;j++){
-                    if(i==0 || j==0){
-                        var th = document.createElement('th');
-                        th.width = cellSize;
-                        th.height = cellSize;
-                        if(i>0){
-                            th.textContent = i;
-                        }
-                        if(j>0){
-                            th.textContent = j;
-                        }
-                        tr.appendChild(th);
-                    }else{
-                        var td = document.createElement('td');
-                        td.width = cellSize;
-                        td.height = cellSize;
-                        td.classList.add("white");
-                        td.onclick = function(){
-                            if(this.classList.contains("white")){
-                                this.classList.remove("white");
-                                this.style.background = cellColor;
-                            }else{
-                                this.classList.add("white");
-                                this.style.background = "white";
-                            }
-                        };
-                        tr.appendChild(td);
-                    }
-                }
-                table.appendChild(tr);
-            }
-            map.appendChild(table);
-            table.style.fontSize = fontSize;
-            
-           
-            
-            function editTble(){
 
+            function changeColor(){
+                if(this.classList.contains("white")){
+                    this.classList.remove("white");
+                    this.style.background = cellColor;
+                }else{
+                    this.classList.add("white");
+                    this.style.background = "white";
+                }
+            }
+        
+            //初期化
+            editTble(map,0,0,cHcnt,cWcnt,1,1,1);
+           
+            //編集
+            function editTble(table,preCH,preCW,cHeight,cWidth,doPaint=0,doClick=0,cellNum=0){
                 cellSize = 24*document.getElementById('tSize').value;
                 fontSize = 10*document.getElementById('tSize').value;
-                cHcnt = document.getElementById('tHeight');
-                cWcnt = document.getElementById('tWidth');
-                if(document.getElementById('cellColor').value == ""){
-                    cellColor = "black";
-                    document.getElementById('colorSample').style.background = "black";
-                }else{
-                    cellColor = document.getElementById('cellColor').value;
-                    document.getElementById('colorSample').style.background = cellColor;
-                }
-                
-                var preCH = table.rows.length;
-                var preCW = table.rows[0].cells.length;
 
-                if(preCH-1 < cHcnt.value){//行が増えた時
-                    for(var i=preCH;i<=cHcnt.value;i++){
+                if(cHeight<=0) cHeight=preCH;
+                if(cWidth<=0) cWidth=cWcnt;
+
+
+                if(preCH-cellNum < cHeight){//行が増えた時
+                    for(var i=preCH;i<parseInt(cHeight)+parseInt(cellNum);i++){
                         var tr = document.createElement('tr');
-                        for(var j=0;j<=cWcnt.value;j++){
-                            if(i==0 || j==0){
+                        for(var j=0;j<parseInt(cWidth)+parseInt(cellNum);j++){
+                            if((i==0 || j==0) && cellNum==1){
                                 var th = document.createElement('th');
                                 th.width = cellSize;
                                 th.height = cellSize;
@@ -186,16 +259,12 @@
                                 var td = document.createElement('td');
                                 td.width = cellSize;
                                 td.height = cellSize;
-                                td.classList.add("white");
-                                td.onclick = function(){
-                                    if(this.classList.contains("white")){
-                                        this.classList.remove("white");
-                                        this.style.background = cellColor;
-                                    }else{
-                                        this.classList.add("white");
-                                        this.style.background = "white";
-                                    }
-                                };
+                                if(doPaint==1){
+                                    td.classList.add("white");
+                                }
+                                if(doClick==1){
+                                    td.onclick = changeColor;
+                                }
                                 tr.appendChild(td);
                             }
                         }
@@ -203,11 +272,11 @@
                     }
 
 
-                }else if(preCW-1 < cWcnt.value){//列が増えた時
-                    for(var i=0;i<=cHcnt.value;i++){
+                }else if(preCW-cellNum < cWidth){//列が増えた時
+                    for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
                         var tr = table.rows[i];
-                        for(var j=preCW;j<=cWcnt.value;j++){
-                            if(i==0 || j==0){
+                        for(var j=preCW;j<parseInt(cWidth)+parseInt(cellNum);j++){
+                            if((i==0 || j==0) && cellNum==1){
                                 var th = document.createElement('th');
                                 th.width = cellSize;
                                 th.height = cellSize;
@@ -222,65 +291,222 @@
                                 var td = document.createElement('td');
                                 td.width = cellSize;
                                 td.height = cellSize;
-                                td.classList.add("white");
-                                td.onclick = function(){
-                                    if(this.classList.contains("white")){
-                                        this.classList.remove("white");
-                                        this.style.background = cellColor;
-                                    }else{
-                                        this.classList.add("white");
-                                        this.style.background = "white";
-                                    }
-                                };
+                                if(doPaint==1){
+                                    td.classList.add("white");
+                                }
+                                if(doClick==1){
+                                    td.onclick = changeColor;
+                                }
                                 tr.appendChild(td);
                             }
                         }
                     }
 
 
-                }else if(preCH-1 > cHcnt.value){//行が減ったとき
-                    for(var i=preCH-1;i>cHcnt.value;i--){
+                }else if(preCH-cellNum > cHeight){//行が減ったとき
+                    for(var i=preCH-cellNum;i>cHeight;i--){
                         table.deleteRow(i);
                     }
 
 
                 }else{//列が減ったとき
-                    for(var i=0;i<=cHcnt.value;i++){
-                        for(var j=preCW-1;j>cWcnt.value;j--){
+                    for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
+                        for(var j=preCW-cellNum;j>cWidth;j--){
                             table.rows[i].deleteCell(-1);
                         }
                     }
                 }
 
-
-                for(var i=0;i<=cHcnt.value;i++){//マップサイズ
-                    for(var j=0;j<=cWcnt.value;j++){
+                //マップサイズ
+                for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
+                    for(var j=0;j<parseInt(cWidth)+parseInt(cellNum);j++){
                         table.rows[i].cells[j].width = cellSize;
                         table.rows[i].cells[j].height = cellSize;
                     }
                 }
                 table.style.fontSize = fontSize;
-                
             }
 
 
+            
+            //テンプレートメーカー
+            var drawRange = document.getElementById("range");
+            var drawFreeRange = document.getElementById("free_range");
+            //初期化
+            editRange();
+
+            //半透明化
+            function rangeColorChange(){
+                for(var i=0;i<drawRange.rows.length;i++){
+                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                        if(drawRange.rows[i].cells[j].classList.contains("white")){
+                            drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                        }
+                    }
+                }
+            }
+
+            //PCの立ち位置設定
+            function setPC(cell){
+                cell.style.backgroundColor = "#00ffff7f"
+            }
+
+            //編集
+            function editRange(){
+                var mode = document.getElementById("input_range");
+                var freeRangeMenu = document.getElementById("input_rows");
+                var fanRangeMenu = document.getElementById("input_fan");
+                var rifleRangeMenu = document.getElementById("input_rifle");
+
+                if(mode.value == "free"){
+                    
+                }else{
+                    drawRange.style.display = "table";
+                    drawFreeRange.style.display = "none";
+                    freeRangeMenu.style.display = "none";
+                    fanRangeMenu.style.display = "none"
+
+                    //tableをリセット
+                    for(var i=drawRange.rows.length;i>0;i--){
+                        drawRange.deleteRow(-1);
+                    }
+
+                    if(mode.value == "circle9"){
+                        editTble(drawRange,0,0,3,3);
+                        for(var i=0;i<drawRange.rows.length;i++){
+                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                                drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                            }
+                        }
+                    }
+
+                    if(mode.value == "circle13"){
+                        editTble(drawRange,0,0,5,5);
+                        for(var i=0;i<drawRange.rows.length;i++){
+                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                                if(Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)<=j && parseInt(drawRange.rows[i].cells.length)-Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)-1>=j){
+                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                                }
+                            }
+                        }
+                    }
+
+                    if(mode.value == "cross5"){
+                        editTble(drawRange,0,0,3,3);
+                        for(var i=0;i<drawRange.rows.length;i++){
+                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                                if(Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)<=j && parseInt(drawRange.rows[i].cells.length)-Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)-1>=j){
+                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                                }
+                            }
+                        }
+                    }
+
+                    if(mode.value == "fan"){
+                        fanRangeMenu.style.display = "flex"
+
+                        let fanDistance = parseInt(document.getElementById("fanRange").value);
+                        editTble(drawRange,0,0,fanDistance,(1+2*(fanDistance-1)));
+                        for(var i=0;i<drawRange.rows.length;i++){
+                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                                if(fanDistance-1-i<=j && fanDistance-1+i>=j){
+                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                                }
+                            }
+                        }
+                    }else{
+                        fanRangeMenu.style.display = "none"
+                    }
+
+                    if(mode.value == "riflerange"){
+                        rifleRangeMenu.style.display = "flex"
+
+                        let minDistance = parseInt(document.getElementById("minRifleRange").value);
+                        let maxDistance = parseInt(document.getElementById("maxRifleRange").value);
+
+                        document.getElementById("minRifleRange").max = maxDistance
+                        document.getElementById("maxRifleRange").min = minDistance
+                        editTble(drawRange,0,0,maxDistance*2+1,maxDistance*2+1);
+                        
+                        for(var i=0;i<drawRange.rows.length;i++){
+                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                                if(Math.abs(maxDistance-i)<=j && maxDistance*2-Math.abs(maxDistance-i)>=j){
+                                    if(Math.abs(maxDistance-i)+maxDistance+1-minDistance>j || maxDistance*2-Math.abs(maxDistance-i)-maxDistance-1+minDistance<j){
+                                        drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                                    }    
+                                }
+                            }
+                        }
+                        setPC(drawRange.rows[maxDistance].cells[maxDistance])
+                    }else{
+                        rifleRangeMenu.style.display = "none"
+                    }
+
+                }
+
+
+            }
+
+            //変更が行われた時のアクション
             window.addEventListener('DOMContentLoaded',function(){
                 let inputNumber = document.getElementById("input_number");
+                let inputRange = document.getElementById("rangemenu");
 
                 inputNumber.addEventListener("change",function(){
-                    editTble();
+                    var preCH = map.rows.length;
+                    var preCW = map.rows[0].cells.length;
+                    cHcnt = document.getElementById('tHeight').value;
+                    cWcnt = document.getElementById('tWidth').value;
+                    editTble(map,preCH,preCW,cHcnt,cWcnt,1,1,1);
+
+                    
+                    if(document.getElementById('cellColor').value == ""){
+                        cellColor = "black";
+                        document.getElementById('colorSample').style.background = "black";
+                    }else{
+                        cellColor = document.getElementById('cellColor').value;
+                        document.getElementById('colorSample').style.background = cellColor;
+                    }
+                    editRange();
+                });
+
+                inputRange.addEventListener("change",function(){
+                    editRange();
                 });
             });
 
 
             //画像化
+            var imgName = ""
+            function saveMap(){
+                imgName = "exb_map" + cHcnt + "x" + cWcnt + "(" + (parseInt(cHcnt)+1) + "x" + (parseInt(cWcnt)+1) + ")" + "_" + document.getElementById('tSize').value
+                html2image('#table','#image')
+            }
+
+            function saveRange(){
+                imgName = "exb_range" + drawRange.rows.length + "x" + drawRange.rows[0].cells.length + "_" + document.getElementById('tSize').value
+                drawRange.style.borderColor = "#00000000"
+                for(var i=0;i<drawRange.rows.length;i++){
+                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                        drawRange.rows[i].cells[j].style.borderColor = "#00000000"
+                    }
+                }
+                html2image('#range','#image')
+                drawRange.style.borderColor = "#000000FF"
+                for(var i=0;i<drawRange.rows.length;i++){
+                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
+                        drawRange.rows[i].cells[j].style.borderColor = "#000000FF"
+                    }
+                }
+            }
+
             function html2image(html) {
                 var capture = document.querySelector(html);
-                html2canvas(capture, {useCORS: true}).then(canvas => {
+                html2canvas(capture, {useCORS: true,backgroundColor: null}).then(canvas => {
                     var base64 = canvas.toDataURL('image/png');
             //		$('#image').attr("src", base64);		//画面に画像表示
                     $('#download').attr('href', base64);
-                    $('#download').attr('download', "exb_map");
+                    $('#download').attr('download', imgName);
                     $('#download')[0].click();				//自動ダウンロード
                 });
             }
