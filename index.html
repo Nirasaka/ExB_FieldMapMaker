@@ -45,7 +45,7 @@
                 margin: 0px;
             }
             #maptable{
-                height: 580px;
+                height: 100%;
                 width: 98.5%;
                 padding: 10px;
                 background: lightblue;
@@ -59,6 +59,8 @@
             }
             #templateMaker{
                 padding-left: 10px;
+                display: absolute;
+                height: 100%;
                 width: 40%;
             }
             #rangemenu{
@@ -66,7 +68,7 @@
             }
             #rangetable{
                 overflow-x: scroll;
-                height: 500px;
+                height: 85%;
                 width: 100%;
             }
             #range{
@@ -122,9 +124,14 @@
             <p>〇使い方</p>
             <p>作成したいフィールドの行数・列数・マップサイズを設定し、「マップを画像で保存」ボタンでダウンロードできます。</p>
             <p>マスを染色したい場合は、染色した色を選択して、マスをクリックしましょう。染色済みのマスをクリックすると白に戻ります。</p>
+            <br>
             <p>範囲テンプレートメーカーはクリックによる染色はできません。また、範囲テンプレートを保存する際にはボーダー(枠線)は透過されます。</p>
+            <p>「射程」モードでの距離法選択では、直線距離法と市街地距離法が選択できます。どちらを使うかはGMに聞きましょう。</p>
+            <p>直線距離法はルルブp79の距離表の様に、最短距離を算出するメソッドです。</p>
+            <p>市街地距離法は数値分のマスを数えた距離を算出するメソッドです。</p>
+            <br>
             <p>〇注意</p>
-            <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ブラウザの表示を100%の状態で保存してください</p>
+            <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ズーム設定を100%の状態で保存してください</p>
         </div>
 
         <div id="input_number" style="display: flex;">
@@ -139,9 +146,8 @@
             <p style="padding-left: 10px;">染色</p>
             <div id="colorSample"></div>
             <input type="color" list="color" id="cellColor"/>
-
-            
         </div>
+
         <div style="padding-top: 15px;padding-bottom: 15px;">
             <button type="button"
                 id="save-btn"
@@ -161,6 +167,7 @@
             <div id="templateMaker">
                 <div>
                     <h4 id="bb_text">範囲テンプレートメーカー</h4>
+
                     <button type="button"
                         id="save-btn"
                         onclick="saveRange()"
@@ -168,6 +175,7 @@
                         範囲を画像で保存
                     </button>
                 </div>
+
                 <div id="rangemenu">
                     <input type="color" list="color" id="rangeColor" value="#ff0000"/>
                     <select name="range_type" id="input_range">
@@ -184,6 +192,11 @@
                         <input type="number" id="minRifleRange" value="1" min="1" style="width:50px;"/>
                         <p>～</p>
                         <input type="number" id="maxRifleRange" value="3" min="1" style="width:50px;"/>
+                        
+                        <select name="selectmethod" id="selectmethod" style="margin-left: 10px;">
+                            <option value="directdistance">直線距離法</option>
+                            <option value="cityblock">市街地距離法</option>
+                        </select>
                     </div>
                     <div id="input_rows">
                         <p style="padding-left: 20px;">行</p>
@@ -423,6 +436,7 @@
 
                         let minDistance = parseInt(document.getElementById("minRifleRange").value);
                         let maxDistance = parseInt(document.getElementById("maxRifleRange").value);
+                        let distanceMethod = document.getElementById("selectmethod").value;
 
                         document.getElementById("minRifleRange").max = maxDistance
                         document.getElementById("maxRifleRange").min = minDistance
@@ -430,7 +444,10 @@
                         
                         for(var i=0;i<drawRange.rows.length;i++){
                             for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(Math.abs(maxDistance-i)+Math.abs(maxDistance-j)<=maxDistance && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)>=minDistance){
+                                if(distanceMethod == "directdistance" && Math.pow(maxDistance-i,2)+Math.pow(maxDistance-j,2)<=Math.pow(maxDistance,2) && Math.pow(maxDistance-i,2)+Math.pow(maxDistance-j,2)>Math.pow(minDistance-0.5,2)){
+                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
+                                }
+                                if(distanceMethod == "cityblock" && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)<=maxDistance && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)>=minDistance){
                                     drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
                                 }
                             }
