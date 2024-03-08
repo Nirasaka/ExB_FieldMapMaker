@@ -18,7 +18,7 @@
                 border: solid 1px;
                 text-align: center;
             }
-            #table{
+            #maptable{
                 border: solid 1px;
                 border-spacing: 0;
                 white-space: nowrap;
@@ -44,7 +44,7 @@
             #op p{
                 margin: 0px;
             }
-            #maptable{
+            #maptableview{
                 height: 100%;
                 width: 98.5%;
                 padding: 10px;
@@ -146,6 +146,8 @@
             <p style="padding-left: 10px;">染色</p>
             <div id="colorSample"></div>
             <input type="color" list="color" id="cellColor"/>
+
+            <label style="padding-left: 10px;"><input type="checkbox" id="alphCellsCheck">列番号アルファベット化</label>
         </div>
 
         <div style="padding-top: 15px;padding-bottom: 15px;">
@@ -158,9 +160,9 @@
         </div>
 
         <!--表の表示場所-->
-        <div id="maptable">
+        <div id="maptableview">
             <div id="mapprint">
-                <table id="table"></table>
+                <table id="maptable"></table>
             </div>
 
             <!--範囲テンプレートメーカー-->
@@ -222,7 +224,7 @@
         <script>
         //マップ作成
 
-            var map = document.getElementById('table');
+            var map = document.getElementById('maptable');
 
             var cellSize = 24*document.getElementById('tSize').value;
             var fontSize = 10*document.getElementById('tSize').value;
@@ -230,6 +232,8 @@
             var cHcnt = document.getElementById('tHeight').value;
             var cWcnt = document.getElementById('tWidth').value;
             var cellColor = "black";
+
+            var alphCellsCheck = document.getElementById("alphCellsCheck");
 
             function changeColor(){
                 if(this.classList.contains("white")){
@@ -245,7 +249,7 @@
             editTble(map,0,0,cHcnt,cWcnt,1,1,1);
            
             //編集
-            function editTble(table,preCH,preCW,cHeight,cWidth,doPaint=0,doClick=0,cellNum=0){
+            function editTble(mapTable,preCH,preCW,cHeight,cWidth,doPaint=0,doClick=0,cellNum=0){
                 cellSize = 24*document.getElementById('tSize').value;
                 fontSize = 10*document.getElementById('tSize').value;
 
@@ -281,13 +285,13 @@
                                 tr.appendChild(td);
                             }
                         }
-                        table.appendChild(tr);
+                        mapTable.appendChild(tr);
                     }
 
 
                 }else if(preCW-cellNum < cWidth){//列が増えた時
                     for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
-                        var tr = table.rows[i];
+                        var tr = mapTable.rows[i];
                         for(var j=preCW;j<parseInt(cWidth)+parseInt(cellNum);j++){
                             if((i==0 || j==0) && cellNum==1){
                                 var th = document.createElement('th');
@@ -318,14 +322,14 @@
 
                 }else if(preCH-cellNum > cHeight){//行が減ったとき
                     for(var i=preCH-cellNum;i>cHeight;i--){
-                        table.deleteRow(i);
+                        mapTable.deleteRow(i);
                     }
 
 
                 }else{//列が減ったとき
                     for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
                         for(var j=preCW-cellNum;j>cWidth;j--){
-                            table.rows[i].deleteCell(-1);
+                            mapTable.rows[i].deleteCell(-1);
                         }
                     }
                 }
@@ -333,13 +337,41 @@
                 //マップサイズ
                 for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
                     for(var j=0;j<parseInt(cWidth)+parseInt(cellNum);j++){
-                        table.rows[i].cells[j].width = cellSize;
-                        table.rows[i].cells[j].height = cellSize;
+                        mapTable.rows[i].cells[j].width = cellSize;
+                        mapTable.rows[i].cells[j].height = cellSize;
                     }
                 }
-                table.style.fontSize = fontSize;
+
+                //列番号アルファベット化
+                console.log(alphCellsCheck.checked);
+                if(cellNum){
+                    if(alphCellsCheck.checked){
+                        for(var i=1;i<parseInt(cWidth)+parseInt(cellNum);i++){
+                            mapTable.rows[0].cells[i].textContent = alphCells(i);
+                        }
+                    }else{
+                        for(var i=1;i<parseInt(cWidth)+parseInt(cellNum);i++){
+                            mapTable.rows[0].cells[i].textContent = i;
+                        }
+                    }
+                }
+
+                mapTable.style.fontSize = fontSize;
             }
 
+            //列番号アルファベット化関数
+            //1=A,2=B,...,26=Z,27=AA,...
+            function alphCells(alphNum){
+                let tmp, letter = "";
+
+                while(alphNum > 0){
+                    tmp = (alphNum - 1) % 26;
+                    letter = String.fromCharCode(tmp + 65) + letter;
+                    alphNum = (alphNum - tmp -1)/26;
+                }
+
+                return letter;
+            }
 
             
             //テンプレートメーカー
@@ -462,6 +494,8 @@
 
             }
 
+
+
             //変更が行われた時のアクション
             window.addEventListener('DOMContentLoaded',function(){
                 let inputNumber = document.getElementById("input_number");
@@ -495,7 +529,7 @@
             var imgName = ""
             function saveMap(){
                 imgName = "exb_map" + cHcnt + "x" + cWcnt + "(" + (parseInt(cHcnt)+1) + "x" + (parseInt(cWcnt)+1) + ")" + "_" + document.getElementById('tSize').value
-                html2image('#table','#image')
+                html2image('#maptable','#image')
             }
 
             function saveRange(){
