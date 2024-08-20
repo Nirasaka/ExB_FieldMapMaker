@@ -1,0 +1,353 @@
+@charset "utf-8";
+
+#header{
+    position: sticky;
+    top: -73px;
+    margin: 0px;
+    background: #FFFFFF;
+    z-index: 999;
+    min-width: 1050px;
+}
+#title{
+    margin: 0;
+    height: 70px;
+}
+#titletext{
+    display: flex;
+    position: relative;
+    & h1{
+        margin: auto 0 auto 0;
+    }
+}
+#credithelp{
+    display: flex;
+}
+#credit{
+    margin: auto 20px auto 20px;
+}
+#help{
+    width: 20px;
+    height: 20px;
+    margin: auto 0 auto 0;
+    border: solid 1px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 15px;
+}
+#helpwindow{
+    display: none;
+    position: absolute;
+    top: 90px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    width: 50%;
+    background-color: #ddffffdd;
+    border: solid 2px;
+    border-radius: 5%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    &.show{
+        display: unset;
+    }
+}
+#helptext{
+    padding: 0 10px 0 10px;
+    & h3,h4{
+        margin-bottom: 0;
+    }
+    & h4{
+        margin-top: 0;
+    }
+    & p{
+        margin-top: 7px;
+        margin-bottom: 7px;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+}
+#maptitle{
+    position: absolute;
+    left: 320px;
+    transform: translateY(0);
+    transition: transform 0.5s;
+    &.rangemode{
+        transform: translateY(-45px);
+    }
+}
+#temptitle{
+    position: absolute;
+    left: 320px;
+    transform: translateY(-45px);
+    transition: transform 0.5s;
+    &.rangemode{
+        transform: translateY(0);
+    }
+}
+
+#controls{
+    display: flex;
+    margin: 0 10px 0 10px;
+    & .ctrlcontents{
+        margin: 10px;
+    }
+}
+#trigger{
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border: solid 2px #000000;
+    transform: rotate(45deg);
+    transition-property: transform background-color;
+    transition-duration: 0.5s;
+    &.rangemode{
+        transform: rotate(0deg);
+        width: 30px;
+        height: 30px;
+    }
+    &:hover{
+        background-color: #00FFFF;
+    }
+}
+#td1{
+    position: absolute;
+    width: 16px;
+    height: 5px;
+    background: #000000;
+    transform: rotate(-45deg) translate(-3px,5px);
+    transition-property: transform;
+    transition-duration: 0.5s;
+    &.rangemode{
+        transform: rotate(45deg) translate(18px,10px);
+    }
+}
+#td2{
+    position: absolute;
+    width: 24px;
+    height: 5px;
+    background: #000000;
+    transform: rotate(-45deg) translate(-5.5px,12px);
+    transition-property: transform;
+    transition-duration: 0.5s;
+    &.rangemode{
+        transform:translate(3px,5px);
+    }
+}
+#td3{
+    position: absolute;
+    width: 16px;
+    height: 5px;
+    background: #000000;
+    transform: rotate(-100deg) translate(-20px,10px);
+    transition-property: transform;
+    transition-duration: 0.5s;
+    &.rangemode{
+        transform: rotate(-45deg) translate(0px,16px);
+    }
+}
+#rangetype{
+    height: 30px;
+    margin: 0;
+    font-size: 20px;
+    display: none;
+    &.rangemode{
+        display: unset;
+    }
+}
+#circlemenu{
+    display: none;
+    &.rangemode{
+        display: unset;
+    }
+    &.circle{
+        display: unset;
+    }
+}
+#circlesize{
+    width: 50px;
+    height: 30px;
+    font-size: 20px;
+}
+#fanmenu{
+    display: none;
+    &.rangemode{
+        display: unset;
+    }
+    &.fan{
+        display: unset;
+    }
+}
+#fansize{
+    width: 50px;
+}
+#riflemenu{
+    display: none;
+    &.rangemode{
+        display: unset;
+    }
+    &.rifle{
+        display: unset;
+    }
+}
+.riflerange{
+    width: 50px;
+}
+#mapparam{
+    display: flex;
+    width: 180px;
+    & label{
+        font-size: 20px;
+        word-break: keep-all;
+    }
+    &.rangemode{
+        display: none;
+    }
+}
+input[type="number"]{
+    font-size: 20px;
+    height: 30px;
+    text-align: center;
+}
+.mapsize{
+    width: 70px;
+}
+#rangeparam{
+    display: none;
+    width: 140px;
+    & label{
+        font-size: 20px;
+        word-break: keep-all;
+    }
+    &.rangemode{
+        display: flex;
+    }
+    &.custom{
+        display: flex;
+    }
+}
+.rangesize{
+    width: 50px;
+}
+#penparam{
+    display: flex;
+    & label{
+        font-size: 20px;
+        word-break: keep-all;
+    }
+}
+#penColor{
+    height: 30px;
+}
+#alpha{
+    display: none;
+    &.rangemode{
+        display: unset;
+    }
+}
+#alphanum{
+    width: 50px;
+}
+#penradio{
+    display: flex;
+    &.rangemode{
+        display: none;
+    }
+    &.custom{
+        display: unset;
+    }
+}
+#eraser{
+    display: none;
+    &.rangemode{
+        display: none;
+    }
+    &.custom{
+        display: unset;
+    }
+}
+input[type="radio"]{
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000000;
+    border-radius: 50%;
+    vertical-align: -5px;
+}
+#initbtn,#dltablebtn{
+    width: 60px;
+    height: 30px;
+    padding: 0;
+    text-align: center;
+    font-size:medium
+}
+#initbtn{
+    &.rangemode{
+        display: none;
+    }
+    &.custom{
+        display: unset;
+    }
+}
+
+
+#workspace{
+    width: 98.5%;
+    min-height: 98.5%;
+    padding: 10px;
+    background: lightblue;
+    display: flex;
+}
+#mapdisplay{
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    transition: transform 0.5s;
+    &.rangemode{
+        transform: translateX(-110%);
+    }
+}
+#map{
+    border-spacing: 0;
+    white-space: nowrap;
+    user-select: none;
+    width: 0;
+    table-layout: fixed;
+}
+#rangedisplay{
+    position: absolute;
+    width: 95%;
+    height: 95%;
+    overflow: auto;
+    transform: translateX(-110%);
+    transition: transform 0.5s;
+    &.rangemode{
+        transform: translateX(0);
+    }
+}
+#range{
+    border: solid 1px;
+    border-spacing: 0;
+    white-space: nowrap;
+    user-select: none;
+    width: 0;
+    table-layout: fixed;
+}
+
+td,th{
+    border: solid 1px;
+    text-align: center;
+    width: 44px;
+    height: 48px;
+}
+th{
+    background: #e0e0e0;
+    font-size: larger;
+}
+td{
+    background: #ffffff;
+}
+
+#image{
+    position: absolute;
+}
