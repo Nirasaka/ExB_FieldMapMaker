@@ -1,561 +1,120 @@
-<html>
-    <head>
-        <title>エクストラ・バレット フィールドマップメーカー</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-        <style>
-            @charset "utf-8";
-            th{
-                background: #eee;
-            }
-            .white{
-                background: rgb(255,255,255);
-            }
-            th,td{
-                border: solid 1px;
-                text-align: center;
-            }
-            #maptable{
-                border: solid 1px;
-                border-spacing: 0;
-                white-space: nowrap;
-                table-layout: fixed;
-                width: 0;
-            }
-            #colorSample{
-                width: 50px;
-                height: 50px;
-                background: black;
-            }
-            #titletext{
-                display: flex;
-                align-items: center;
-                margin: 0px;
-                width: 100%;
-            }
-            #op{
-                border: solid 1px;
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            #op p{
-                margin: 0px;
-            }
-            #maptableview{
-                height: 100%;
-                width: 98.5%;
-                padding: 10px;
-                background: lightblue;
-                display: flex;
-                margin: 0;
-            }
-            #mapprint{
-                overflow-x: scroll;
-                width: 60%;
-                height: 100%;
-            }
-            #templateMaker{
-                padding-left: 10px;
-                display: absolute;
-                height: 100%;
-                width: 40%;
-            }
-            #rangemenu{
-                display: flex;
-            }
-            #rangetable{
-                overflow-x: scroll;
-                height: 85%;
-                width: 100%;
-            }
-            #range{
-                border: solid 1px;
-                border-spacing: 0;
-                white-space: nowrap;
-                table-layout: fixed;
-                width: 0;
-            }
-            #free_range{
-                border: solid 1px;
-                border-spacing: 0;
-                white-space: nowrap;
-                table-layout: fixed;
-                display: none;
-                width: 0;
-            }
-            #input_fan{
-                display: none;
-            }
-            #input_fan p{
-                margin: 5px;
-                white-space: nowrap;
-            }
-            #input_rifle{
-                display: none;
-            }
-            #input_rifle p{
-                margin: 5px;
-                white-space: nowrap;
-            }
-            #input_rows{
-                display: none;
-            }
-            #input_rows p{
-                margin: 5px;
-                white-space: nowrap;
-            }
-            #bb_text{
-                margin: 0;
-                white-space: nowrap;
-            }
-        </style>
-
-    </head>
-    <body>
-        <div id="titletext">
-            <h1>エクストラ・バレット フィールドマップメーカー</h1>
-            <h3 style="margin-left: 20px;">制作：ニラサカ (X：<a href="https://twitter.com/JumpOnLily_pad">@JumpOnLily_pad</a>)</h3>
-        </div>
-        <div id="op">
-            <p>〇使い方</p>
-            <p>作成したいフィールドの行数・列数・マップサイズを設定し、「マップを画像で保存」ボタンでダウンロードできます。</p>
-            <p>マスを染色したい場合は、染色した色を選択して、マスをクリックしましょう。染色済みのマスをクリックすると白に戻ります。</p>
-            <br>
-            <p>範囲テンプレートメーカーはクリックによる染色はできません。また、範囲テンプレートを保存する際にはボーダー(枠線)は透過されます。</p>
-            <p>「射程」モードでの距離法選択では、直線距離法と市街地距離法が選択できます。どちらを使うかはGMに聞きましょう。</p>
-            <p>直線距離法はルルブp79の距離表の様に、最短距離を算出するメソッドです。</p>
-            <p>市街地距離法は数値分のマスを数えた距離を算出するメソッドです。</p>
-            <br>
-            <p>〇注意</p>
-            <p>保存される画像のサイズはブラウザの表示サイズに依存しているので、ズーム設定を100%の状態で保存してください</p>
-        </div>
-
-        <div id="input_number" style="display: flex;">
-            <p>行</p>
-            <input type="number" id="tHeight" value="10" min="1"/>
-            <p style="padding-left: 10px;">列</p>
-            <input type="number" id="tWidth" value="10" min="1"/>
-
-            <p style="padding-left: 10px;">マップサイズ</p>
-            <input type="number" id="tSize" value="2" min="1" max="6"/>
-
-            <p style="padding-left: 10px;">染色</p>
-            <div id="colorSample"></div>
-            <input type="color" list="color" id="cellColor"/>
-
-            <label style="padding-left: 10px;"><input type="checkbox" id="alphCellsCheck">列番号アルファベット化</label>
-        </div>
-
-        <div style="padding-top: 15px;padding-bottom: 15px;">
-            <button type="button"
-                id="save-btn"
-                onclick="saveMap()"
-                >
-                マップを画像で保存
-            </button>
-        </div>
-
-        <!--表の表示場所-->
-        <div id="maptableview">
-            <div id="mapprint">
-                <table id="maptable"></table>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./map.css" type="text/css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</head>
+<body>
+    <div id="header">
+        <div id="title">
+            <div id="titletext">
+                <h1>エクストラ・バレット </h1>
+                <h1 id="maptitle" class="modechange">フィールドマップメーカー</h1>
+                <h1 id="temptitle" class="modechange">範囲テンプレートメーカー</h1>
             </div>
-
-            <!--範囲テンプレートメーカー-->
-            <div id="templateMaker">
-                <div>
-                    <h4 id="bb_text">範囲テンプレートメーカー</h4>
-
-                    <button type="button"
-                        id="save-btn"
-                        onclick="saveRange()"
-                        >
-                        範囲を画像で保存
-                    </button>
-                </div>
-
-                <div id="rangemenu">
-                    <input type="color" list="color" id="rangeColor" value="#ff0000"/>
-                    <select name="range_type" id="input_range">
-                        <option value="circle9">円形範囲9</option>
-                        <option value="circle13">円形範囲13</option>
-                        <option value="cross5">十字範囲5</option>
-                        <option value="fan">扇状範囲</option>
-                        <option value="riflerange">射程</option>
-                    </select>
-                    <div id="input_fan">
-                        <input type="number" id="fanRange" value="2" min="1" style="width:50px;"/><p>の二乗</p>
+            <div id="credithelp">
+                <h3 id="credit">制作：ニラサカ (X：<a href="https://twitter.com/JumpOnLily_pad">@JumpOnLily_pad</a>)</h3>
+                <h3 id="help">？</h3>
+                <div id="helpwindow">
+                    <div id="helptext">
+                        <h3>使い方</h3>
+                        <p>左上の「テ/マ」ボタンでフィールドマップメーカーと範囲テンプレートメーカーを切り替えることができます。</p>
+                        <br>
+                        <h4>〇フィールドマップメーカー</h4>
+                        <p>①マップのサイズ(縦横)を設定します。</p>
+                        <p>②ペンモードを選択中、マップのマスをマウスでなぞるとペンの色で染色できます。</p>
+                        <p>③スポイトモードを選択中、マップ上のマスの色をペンの色にすることができます。</p>
+                        <p>④「初期化」ボタンを押すことで、マップ上の染色をリセットします。</p>
+                        <p>⑤「保存」ボタンを押すことで、現在のマップを画像でダウンロードできます。</p>
+                        <br>
+                        <h4>〇範囲テンプレートメーカー</h4>
+                        <p>①範囲タイプを選択し、各パラメータを設定することでテンプレートを作成できます。</p>
+                        <p>②カラーパレットでベースカラーを設定でき、任意の不透明度にすることができます。</p>
+                        <p>③射程モードのテンプレート中央にある●はプレイヤーの位置を表しています。</p>
+                        <p>④カスタムモードではマスを染色することで、任意の形のテンプレートを作成できます。</p>
+                        <p>④「初期化」ボタンを押すことで、カスタムテンプレート上の染色をリセットします。</p>
+                        <p>⑤「保存」ボタンを押すことで、現在のテンプレートを画像でダウンロードできます。その際、ボーダー(黒い枠線)は透過された状態の画像が保存されます。</p>
                     </div>
-                    <div id="input_rifle">
-                        <input type="number" id="minRifleRange" value="1" min="1" style="width:50px;"/>
-                        <p>～</p>
-                        <input type="number" id="maxRifleRange" value="3" min="1" style="width:50px;"/>
-                        
-                        <select name="selectmethod" id="selectmethod" style="margin-left: 10px;">
-                            <option value="directdistance">直線距離法</option>
-                            <option value="cityblock">市街地距離法</option>
-                        </select>
-                    </div>
-                    <div id="input_rows">
-                        <p style="padding-left: 20px;">行</p>
-                        <input type="number" id="rangeH" value="5" min="1" style="width: 50px;"/>
-                        <p style="padding-left: 10px;">列</p>
-                        <input type="number" id="rangeW" value="5" min="1" style="width: 50px;"/>
-                    </div>
-                </div>
-                <div id="rangetable">
-                    <table id="range"></table>
-                    <table id="free_range"></table>
                 </div>
             </div>
         </div>
-        
+    
+        <div id="controls">
+            <a href="#" id="trigger" class="ctrlcontents modechange">
+                <div id="td1" class="modechange"></div>
+                <div id="td2" class="modechange"></div>
+                <div id="td3" class="modechange"></div>
+            </a>
 
-        <!--画像化-->
-        <img id="image" name="image" src="" />
-        <a id="download" href="#" download=""></a>
+            <select name="rangetype" id="rangetype" class="ctrlcontents modechange">
+                <option value="circle">円形範囲</option>
+                <option value="cross">十字範囲</option>
+                <option value="fan">扇状範囲</option>
+                <option value="rifle">射程範囲</option>
+                <option value="custom">カスタム</option>
+            </select>
 
+            <div id="circlemenu" class="ctrlcontents">
+                <select name="circles" id="circlesize" class="modechange">
+                    <option value="9">9</option>
+                    <option value="13">13</option>
+                    <option value="25">25</option>
+                </select>
+            </div>
 
-        
-        <script>
-        //マップ作成
+            <div id="fanmenu" class="ctrlcontents">
+                <label><input type="number" id="fansize" class="modechange" value="2" min="1">の二乗</label>
+            </div>
 
-            var map = document.getElementById('maptable');
+            <div id="riflemenu" class="ctrlcontents">
+                <label>
+                    <input type="number" id="riflemin" class="riflerange modechange" value="1" min="1">
+                    ～
+                    <input type="number" id="riflemax" class="riflerange modechange" value="3">
+                </label>
+            </div>
 
-            var cellSize = 24*document.getElementById('tSize').value;
-            var fontSize = 10*document.getElementById('tSize').value;
+            <div id="mapparam" class="ctrlcontents modechange">
+                <label>横<input type="number" id="mapwidth" class="mapsize modechange" value="10" min="1"/></label>
+                <label>縦<input type="number" id="mapheight" class="mapsize modechange" value="10" min="1"/></label>
+            </div>
 
-            var cHcnt = document.getElementById('tHeight').value;
-            var cWcnt = document.getElementById('tWidth').value;
-            var cellColor = "black";
+            <div id="rangeparam" class="ctrlcontents">
+                <label>横<input type="number" id="rangewidth" class="rangesize modechange" value="3" min="1"/></label>
+                <label>縦<input type="number" id="rangeheight" class="rangesize modechange" value="3" min="1"/></label>
+            </div>
 
-            var alphCellsCheck = document.getElementById("alphCellsCheck");
+            <div id="penparam" class="ctrlcontents">
+                <input type="color" list="color" id="penColor"/>
+                <label id="alpha"  class="modechange">不透明度<input type="number" name="alpha" id="alphanum"  value="0.5" max="1.0" min="0.1" step="0.1"></label>
+                <div id="penradio" class="modechange">
+                    <label><input type="radio" name="penOps" value="pen" checked>ペン</label>
+                    <label><input type="radio" name="penOps" value="syringe">スポイト</label>
+                    <label id="eraser"><input type="radio" name="penOps" value="eraser">消しゴム</label>
+                </div>
+            </div>
 
-            function changeColor(){
-                if(this.classList.contains("white")){
-                    this.classList.remove("white");
-                    this.style.background = cellColor;
-                }else{
-                    this.classList.add("white");
-                    this.style.background = "white";
-                }
-            }
-        
-            //初期化
-            editTble(map,0,0,cHcnt,cWcnt,1,1,1);
-           
-            //編集
-            function editTble(mapTable,preCH,preCW,cHeight,cWidth,doPaint=0,doClick=0,cellNum=0){
-                cellSize = 24*document.getElementById('tSize').value;
-                fontSize = 10*document.getElementById('tSize').value;
+            <div id="btns" class="ctrlcontents">
+                <button id="initbtn" class="modechange">初期化</button>
 
-                if(cHeight<=0) cHeight=preCH;
-                if(cWidth<=0) cWidth=cWcnt;
+                <!--画像化-->
+                <button id="dltablebtn" class="modechange">保存</button>
+                <a id="download" href="#" download=""></a>
+            </div>
+        </div>
 
+    </div>
 
-                if(preCH-cellNum < cHeight){//行が増えた時
-                    for(var i=preCH;i<parseInt(cHeight)+parseInt(cellNum);i++){
-                        var tr = document.createElement('tr');
-                        for(var j=0;j<parseInt(cWidth)+parseInt(cellNum);j++){
-                            if((i==0 || j==0) && cellNum==1){
-                                var th = document.createElement('th');
-                                th.width = cellSize;
-                                th.height = cellSize;
-                                if(i>0){
-                                    th.textContent = i;
-                                }
-                                if(j>0){
-                                    th.textContent = j;
-                                }
-                                tr.appendChild(th);
-                            }else{
-                                var td = document.createElement('td');
-                                td.width = cellSize;
-                                td.height = cellSize;
-                                if(doPaint==1){
-                                    td.classList.add("white");
-                                }
-                                if(doClick==1){
-                                    td.onclick = changeColor;
-                                }
-                                tr.appendChild(td);
-                            }
-                        }
-                        mapTable.appendChild(tr);
-                    }
+    <div id="workspace">
+        <div id="mapdisplay" class="modechange">
+            <table id="map"></table>
+        </div>
+        <div id="rangedisplay" class="modechange">
+            <table id="range"></table>
+        </div>
+    </div>
 
-
-                }else if(preCW-cellNum < cWidth){//列が増えた時
-                    for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
-                        var tr = mapTable.rows[i];
-                        for(var j=preCW;j<parseInt(cWidth)+parseInt(cellNum);j++){
-                            if((i==0 || j==0) && cellNum==1){
-                                var th = document.createElement('th');
-                                th.width = cellSize;
-                                th.height = cellSize;
-                                if(i>0){
-                                    th.textContent = i;
-                                }
-                                if(j>0){
-                                    th.textContent = j;
-                                }
-                                tr.appendChild(th);
-                            }else{
-                                var td = document.createElement('td');
-                                td.width = cellSize;
-                                td.height = cellSize;
-                                if(doPaint==1){
-                                    td.classList.add("white");
-                                }
-                                if(doClick==1){
-                                    td.onclick = changeColor;
-                                }
-                                tr.appendChild(td);
-                            }
-                        }
-                    }
-
-
-                }else if(preCH-cellNum > cHeight){//行が減ったとき
-                    for(var i=preCH-cellNum;i>cHeight;i--){
-                        mapTable.deleteRow(i);
-                    }
-
-
-                }else{//列が減ったとき
-                    for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
-                        for(var j=preCW-cellNum;j>cWidth;j--){
-                            mapTable.rows[i].deleteCell(-1);
-                        }
-                    }
-                }
-
-                //マップサイズ
-                for(var i=0;i<parseInt(cHeight)+parseInt(cellNum);i++){
-                    for(var j=0;j<parseInt(cWidth)+parseInt(cellNum);j++){
-                        mapTable.rows[i].cells[j].width = cellSize;
-                        mapTable.rows[i].cells[j].height = cellSize;
-                    }
-                }
-
-                //列番号アルファベット化
-                console.log(alphCellsCheck.checked);
-                if(cellNum){
-                    if(alphCellsCheck.checked){
-                        for(var i=1;i<parseInt(cWidth)+parseInt(cellNum);i++){
-                            mapTable.rows[0].cells[i].textContent = alphCells(i);
-                        }
-                    }else{
-                        for(var i=1;i<parseInt(cWidth)+parseInt(cellNum);i++){
-                            mapTable.rows[0].cells[i].textContent = i;
-                        }
-                    }
-                }
-
-                mapTable.style.fontSize = fontSize;
-            }
-
-            //列番号アルファベット化関数
-            //1=A,2=B,...,26=Z,27=AA,...
-            function alphCells(alphNum){
-                let tmp, letter = "";
-
-                while(alphNum > 0){
-                    tmp = (alphNum - 1) % 26;
-                    letter = String.fromCharCode(tmp + 65) + letter;
-                    alphNum = (alphNum - tmp -1)/26;
-                }
-
-                return letter;
-            }
-
-            
-            //テンプレートメーカー
-            var drawRange = document.getElementById("range");
-            var drawFreeRange = document.getElementById("free_range");
-            //初期化
-            editRange();
-
-            //半透明化
-            function rangeColorChange(){
-                for(var i=0;i<drawRange.rows.length;i++){
-                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                        if(drawRange.rows[i].cells[j].classList.contains("white")){
-                            drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                        }
-                    }
-                }
-            }
-
-            //PCの立ち位置設定
-            function setPC(cell){
-                cell.style.backgroundColor = "#00ffff7f"
-            }
-
-            //編集
-            function editRange(){
-                var mode = document.getElementById("input_range");
-                var freeRangeMenu = document.getElementById("input_rows");
-                var fanRangeMenu = document.getElementById("input_fan");
-                var rifleRangeMenu = document.getElementById("input_rifle");
-
-                if(mode.value == "free"){
-                    
-                }else{
-                    drawRange.style.display = "table";
-                    drawFreeRange.style.display = "none";
-                    freeRangeMenu.style.display = "none";
-                    fanRangeMenu.style.display = "none"
-
-                    //tableをリセット
-                    for(var i=drawRange.rows.length;i>0;i--){
-                        drawRange.deleteRow(-1);
-                    }
-
-                    if(mode.value == "circle9"){
-                        editTble(drawRange,0,0,3,3);
-                        for(var i=0;i<drawRange.rows.length;i++){
-                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                            }
-                        }
-                    }
-
-                    if(mode.value == "circle13"){
-                        editTble(drawRange,0,0,5,5);
-                        for(var i=0;i<drawRange.rows.length;i++){
-                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)<=j && parseInt(drawRange.rows[i].cells.length)-Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)-1>=j){
-                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                }
-                            }
-                        }
-                    }
-
-                    if(mode.value == "cross5"){
-                        editTble(drawRange,0,0,3,3);
-                        for(var i=0;i<drawRange.rows.length;i++){
-                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)<=j && parseInt(drawRange.rows[i].cells.length)-Math.abs(parseInt(drawRange.rows[i].cells.length/2)-i)-1>=j){
-                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                }
-                            }
-                        }
-                    }
-
-                    if(mode.value == "fan"){
-                        fanRangeMenu.style.display = "flex"
-
-                        let fanDistance = parseInt(document.getElementById("fanRange").value);
-                        editTble(drawRange,0,0,fanDistance,(1+2*(fanDistance-1)));
-                        for(var i=0;i<drawRange.rows.length;i++){
-                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(fanDistance-1-i<=j && fanDistance-1+i>=j){
-                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                }
-                            }
-                        }
-                    }else{
-                        fanRangeMenu.style.display = "none"
-                    }
-
-                    if(mode.value == "riflerange"){
-                        rifleRangeMenu.style.display = "flex"
-
-                        let minDistance = parseInt(document.getElementById("minRifleRange").value);
-                        let maxDistance = parseInt(document.getElementById("maxRifleRange").value);
-                        let distanceMethod = document.getElementById("selectmethod").value;
-
-                        document.getElementById("minRifleRange").max = maxDistance
-                        document.getElementById("maxRifleRange").min = minDistance
-                        editTble(drawRange,0,0,maxDistance*2+1,maxDistance*2+1);
-                        
-                        for(var i=0;i<drawRange.rows.length;i++){
-                            for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                                if(distanceMethod == "directdistance" && Math.pow(maxDistance-i,2)+Math.pow(maxDistance-j,2)<=Math.pow(maxDistance,2) && Math.pow(maxDistance-i,2)+Math.pow(maxDistance-j,2)>Math.pow(minDistance-0.5,2)){
-                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                }
-                                if(distanceMethod == "cityblock" && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)<=maxDistance && Math.abs(maxDistance-i)+Math.abs(maxDistance-j)>=minDistance){
-                                    drawRange.rows[i].cells[j].style.backgroundColor = document.getElementById("rangeColor").value + "7f"
-                                }
-                            }
-                        }
-                        setPC(drawRange.rows[maxDistance].cells[maxDistance])
-                    }else{
-                        rifleRangeMenu.style.display = "none"
-                    }
-
-                }
-
-
-            }
-
-
-
-            //変更が行われた時のアクション
-            window.addEventListener('DOMContentLoaded',function(){
-                let inputNumber = document.getElementById("input_number");
-                let inputRange = document.getElementById("rangemenu");
-
-                inputNumber.addEventListener("change",function(){
-                    var preCH = map.rows.length;
-                    var preCW = map.rows[0].cells.length;
-                    cHcnt = document.getElementById('tHeight').value;
-                    cWcnt = document.getElementById('tWidth').value;
-                    editTble(map,preCH,preCW,cHcnt,cWcnt,1,1,1);
-
-                    
-                    if(document.getElementById('cellColor').value == ""){
-                        cellColor = "black";
-                        document.getElementById('colorSample').style.background = "black";
-                    }else{
-                        cellColor = document.getElementById('cellColor').value;
-                        document.getElementById('colorSample').style.background = cellColor;
-                    }
-                    editRange();
-                });
-
-                inputRange.addEventListener("change",function(){
-                    editRange();
-                });
-            });
-
-
-            //画像化
-            var imgName = ""
-            function saveMap(){
-                imgName = "exb_map" + cHcnt + "x" + cWcnt + "(" + (parseInt(cHcnt)+1) + "x" + (parseInt(cWcnt)+1) + ")" + "_" + document.getElementById('tSize').value
-                html2image('#maptable','#image')
-            }
-
-            function saveRange(){
-                imgName = "exb_range" + drawRange.rows.length + "x" + drawRange.rows[0].cells.length + "_" + document.getElementById('tSize').value
-                drawRange.style.borderColor = "#00000000"
-                for(var i=0;i<drawRange.rows.length;i++){
-                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                        drawRange.rows[i].cells[j].style.borderColor = "#00000000"
-                    }
-                }
-                html2image('#range','#image')
-                drawRange.style.borderColor = "#000000FF"
-                for(var i=0;i<drawRange.rows.length;i++){
-                    for(var j=0;j<drawRange.rows[i].cells.length;j++){
-                        drawRange.rows[i].cells[j].style.borderColor = "#000000FF"
-                    }
-                }
-            }
-
-            function html2image(html) {
-                var capture = document.querySelector(html);
-                html2canvas(capture, {useCORS: true,backgroundColor: null}).then(canvas => {
-                    var base64 = canvas.toDataURL('image/png');
-            //		$('#image').attr("src", base64);		//画面に画像表示
-                    $('#download').attr('href', base64);
-                    $('#download').attr('download', imgName);
-                    $('#download')[0].click();				//自動ダウンロード
-                });
-            }
-        </script>
-
-    </body>
+    <img id="image" name="image" src="" />
+    <script src="./map.js"></script>
+</body>
 </html>
